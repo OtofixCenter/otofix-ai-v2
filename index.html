@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Otofix AI - Araç Teşhis Uygulaması</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <style>
+    /* Custom Tailwind animations */
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fade-in 0.5s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-r from-blue-100 to-purple-200 min-h-screen font-sans">
+  <header class="bg-blue-600 text-white py-6 shadow-lg">
+    <div class="max-w-4xl mx-auto px-4 flex justify-between items-center">
+      <h1 class="text-3xl font-bold">🚗 Otofix AI</h1>
+      <p class="text-sm opacity-90">Akıllı Araç Teşhis Asistanınız</p>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto mt-10 p-8 bg-white rounded-2xl shadow-2xl animate-fade-in">
+    <h2 class="text-3xl font-bold text-center mb-6 text-gray-800">Aracınızı Teşhis Edin</h2>
+    
+    <form id="vehicleForm" class="space-y-6" x-data="{
+      brandOpen: false,
+      modelOpen: false,
+      yearOpen: false,
+      selectedBrand: '',
+      selectedModel: '',
+      selectedYear: '',
+      brands: ['Audi','BMW','Chevrolet','Ford','Honda','Hyundai','Kia','Mercedes','Nissan','Tesla','Toyota','Volkswagen'],
+      models: {
+        'Toyota': ['Corolla', 'Camry', 'Rav4'],
+        'Honda': ['Civic', 'Accord', 'CR-V'],
+        'Ford': ['F-150', 'Mustang', 'Focus'],
+        'Tesla': ['Model 3', 'Model S', 'Model X'],
+        'Volkswagen': ['Passat', 'Golf', 'Tiguan'],
+        'BMW': ['3 Series', '5 Series', 'X5'],
+        'Mercedes': ['C-Class', 'E-Class', 'GLC'],
+        'Audi': ['A4', 'A6', 'Q5'],
+        'Chevrolet': ['Malibu', 'Equinox', 'Silverado'],
+        'Hyundai': ['Elantra', 'Tucson', 'Santa Fe'],
+        'Kia': ['Forte', 'Sportage', 'Sorento'],
+        'Nissan': ['Sentra', 'Rogue', 'Titan'],
+      },
+      filteredModels() {
+        return this.models[this.selectedBrand] || [];
+      },
+      years: [...Array(25).keys()].map(i => 2025 - i)
+    }">
+      <div>
+        <label for="type" class="font-semibold text-gray-700">Araç Tipi</label>
+        <select id="type" class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+          <option value="">Tip Seçin</option>
+          <option value="car">Araba</option>
+          <option value="bus">Otobüs</option>
+          <option value="truck">Kamyon</option>
+          <option value="motorcycle">Motosiklet</option>
+          <option value="bicycle">Bisiklet</option>
+        </select>
+      </div>
+
+      <div class="relative">
+        <label for="brand" class="font-semibold text-gray-700">Marka</label>
+        <button type="button" @click="brandOpen = !brandOpen; modelOpen = false; selectedModel = ''" class="w-full mt-1 p-3 border border-gray-300 rounded-lg bg-gray-50 flex justify-between items-center focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <span x-text="selectedBrand || 'Marka Seçin'"></span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <ul x-show="brandOpen" @click.outside="brandOpen = false" class="absolute z-10 w-full bg-white border border-gray-300 mt-1 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+          <template x-for="brand in brands" :key="brand">
+            <li><button type="button" @click="selectedBrand=brand; brandOpen=false" class="w-full text-left px-4 py-2 hover:bg-purple-100 transition-colors" x-text="brand"></button></li>
+          </template>
+        </ul>
+        <input type="hidden" id="brand" :value="selectedBrand" required />
+      </div>
+
+      <div class="relative" x-show="selectedBrand">
+        <label for="model" class="font-semibold text-gray-700">Model</label>
+        <button type="button" @click="modelOpen = !modelOpen" class="w-full mt-1 p-3 border border-gray-300 rounded-lg bg-gray-50 flex justify-between items-center focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <span x-text="selectedModel || 'Model Seçin'"></span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <ul x-show="modelOpen" @click.outside="modelOpen = false" class="absolute z-10 w-full bg-white border border-gray-300 mt-1 rounded-lg shadow-lg max-h-40 overflow-y-auto">
+          <template x-for="model in filteredModels()" :key="model">
+            <li><button type="button" @click="selectedModel=model; modelOpen=false" class="w-full text-left px-4 py-2 hover:bg-purple-100 transition-colors" x-text="model"></button></li>
+          </template>
+        </ul>
+        <input type="hidden" id="model" :value="selectedModel" required />
+      </div>
+
+      <div class="relative">
+        <label for="year" class="font-semibold text-gray-700">Yıl</label>
+        <button type="button" @click="yearOpen = !yearOpen" class="w-full mt-1 p-3 border border-gray-300 rounded-lg bg-gray-50 flex justify-between items-center focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <span x-text="selectedYear || 'Yıl Seçin'"></span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <ul x-show="yearOpen" @click.outside="yearOpen = false" class="absolute z-10 w-full bg-white border border-gray-300 mt-1 rounded-lg shadow-lg max-h-40 overflow-y-auto">
+          <template x-for="year in years" :key="year">
+            <li><button type="button" @click="selectedYear=year; yearOpen=false" class="w-full text-left px-4 py-2 hover:bg-purple-100 transition-colors" x-text="year"></button></li>
+          </template>
+        </ul>
+        <input type="hidden" id="year" :value="selectedYear" required />
+      </div>
+
+      <div>
+        <label for="photo" class="font-semibold text-gray-700">Parça Fotoğrafı Yükle</label>
+        <input type="file" id="photo" accept="image/*" class="w-full mt-1 p-3 border border-gray-300 rounded-lg" required />
+      </div>
+
+      <button type="submit" class="w-full bg-purple-600 text-white py-3 rounded-lg font-bold text-lg hover:bg-purple-700 transition-colors">Yapay Zeka ile Analiz Et</button>
+    </form>
+
+    <div id="result" class="mt-8 hidden p-6 border border-gray-200 rounded-xl bg-gray-50 animate-fade-in">
+      <h3 class="text-2xl font-bold text-gray-800 mb-4">🤖 Yapay Zeka Teşhisi</h3>
+      <p id="output" class="text-gray-700 leading-relaxed"></p>
+    </div>
+  </main>
+
+  <script>
+    const form = document.getElementById('vehicleForm');
+    const resultBox = document.getElementById('result');
+    const output = document.getElementById('output');
+    
+    // Vercel'de backend, fetch isteğini doğrudan /analyze adresine gönderir.
+    const backendURL = '/analyze'; 
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const brand = document.getElementById('brand').value;
+      const model = document.getElementById('model').value;
+      const year = document.getElementById('year').value;
+      const type = document.getElementById('type').value;
+      const photo = document.getElementById('photo').files[0];
+
+      if (!brand || !model || !year || !type || !photo) {
+        output.innerHTML = "<p class='text-red-600 font-semibold'>Lütfen tüm alanları doldurun.</p>";
+        resultBox.classList.remove('hidden');
+        return;
+      }
+      
+      const formData = new FormData();
+      formData.append('type', type);
+      formData.append('brand', brand);
+      formData.append('model', model);
+      formData.append('year', year);
+      formData.append('image', photo);
+
+      try {
+        output.innerHTML = "<p class='text-blue-600 font-semibold'>Analiz ediliyor... Lütfen bekleyin.</p>";
+        resultBox.classList.remove('hidden');
+        
+        const response = await fetch(backendURL, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Network response was not ok. Status: ${response.status}, Details: ${errorText}`);
+        }
+
+        const data = await response.json();
+        const formattedResult = formatResponse(data.result);
+        output.innerHTML = formattedResult || "<p class='text-gray-700'>Sonuç alınamadı.</p>";
+      } catch (error) {
+        console.error('Error:', error);
+        output.innerHTML = `<p class='text-red-600 font-semibold'>Hata: Yapay zeka sunucusuna bağlanılamadı.<br>Hata Detayları: ${error.message}</p>`;
+      }
+    });
+
+    function formatResponse(text) {
+      if (!text) return "";
+      
+      let html = `<p class="mb-4">${text.split('\n')[0]}</p>`;
+      const lines = text.split('\n').slice(1);
+      
+      const productLinkKeyword = "gallacenter.com";
+      const products = lines.filter(line => line.includes(productLinkKeyword));
+      const diagnosis = lines.filter(line => !line.includes(productLinkKeyword));
+
+      if (diagnosis.length > 0) {
+        html += `<h4 class="font-bold text-lg mt-4 mb-2">Teşhis ve Çözüm:</h4>`;
+        html += `<ul class="list-disc pl-5 space-y-1">`
+        diagnosis.forEach(line => {
+          if(line.trim() !== "") {
+            html += `<li>${line.replace(/^- /, '')}</li>`;
+          }
+        });
+        html += `</ul>`;
+      }
+      
+      if (products.length > 0) {
+        html += `<h4 class="font-bold text-lg mt-6 mb-2">Gallacenter.com'dan Önerilen Parçalar:</h4>`;
+        products.forEach(line => {
+          const parts = line.split(':');
+          const partName = parts[0];
+          const productLink = parts[1];
+          html += `<div class="bg-white p-4 rounded-lg shadow-inner flex items-center justify-between mb-2">`;
+          html += `<span class="font-medium text-gray-800">${partName}</span>`;
+          html += `<a href="${productLink.trim()}" target="_blank" class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition-colors">Ürünü Görüntüle</a>`;
+          html += `</div>`;
+        });
+      }
+
+      return html;
+    }
+  </script>
+</body>
+</html>
