@@ -75,7 +75,7 @@ app.post('/analyze', upload.single('image'), async (req, res) => {
     res.json({ result: text });
   } catch (error) {
     console.error('Error during image analysis:', error);
-    res.status(500).json({ error: 'Görsel analiz edilirken bir hata oluştu.' });
+    res.status(500).json({ error: 'An error occurred while analyzing the image.' });
   }
 });
 
